@@ -15,9 +15,9 @@ Requirements
 -----------------
 
 - See https://github.com/mperham/sidekiq/tree/v6.4.0
-  - Redis: 4.0+
+  - Redis: 6.2+
   - Ruby: MRI 2.5+ or JRuby 9.2+.
-  - Sidekiq 6.0 supports Rails 5.0+ but does not require it.
+  - Sidekiq 6.5+ 
 
 Installation
 -----------------
@@ -28,12 +28,6 @@ Installation
 In your initializers, include the line:
 
     Sidekiq::DelayExtensions.enable_delay!
-
-Upgrading (IMPORTANT): Also add
-
-    Sidekiq::Extensions::DelayedClass = Sidekiq::DelayExtensions::DelayedClass
-    Sidekiq::Extensions::DelayedModel = Sidekiq::DelayExtensions::DelayedModel
-    Sidekiq::Extensions::DelayedMailer = Sidekiq::DelayExtensions::DelayedMailer
 
 Testing
 -----------------

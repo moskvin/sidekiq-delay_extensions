@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sidekiq/delay_extensions/generic_proxy"
+require 'sidekiq/delay_extensions/generic_proxy'
 
 module Sidekiq
   module DelayExtensions
@@ -15,10 +15,10 @@ module Sidekiq
     # object to Redis.  Your Sidekiq jobs should pass IDs, not entire instances.
     # This is here for backwards compatibility with Delayed::Job only.
     class DelayedModel
-      include Sidekiq::Worker
+      include Sidekiq::Job
 
       def perform(yml)
-        (target, method_name, args) = YAML.load(yml)
+        (target, method_name, args) = YAML.safe_load(yml, [Symbol])
         target.__send__(method_name, *args)
       end
     end
@@ -29,15 +29,16 @@ module Sidekiq
       end
 
       def sidekiq_delay_for(interval, options = {})
-        Proxy.new(DelayedModel, self, options.merge("at" => Time.now.to_f + interval.to_f))
+        Proxy.new(DelayedModel, self, options.merge('at' => Time.now.to_f + interval.to_f))
       end
 
       def sidekiq_delay_until(timestamp, options = {})
-        Proxy.new(DelayedModel, self, options.merge("at" => timestamp.to_f))
+        Proxy.new(DelayedModel, self, options.merge('at' => timestamp.to_f))
       end
-      alias_method :delay, :sidekiq_delay
-      alias_method :delay_for, :sidekiq_delay_for
-      alias_method :delay_until, :sidekiq_delay_until
+
+      alias delay sidekiq_delay
+      alias delay_for sidekiq_delay_for
+      alias delay_until sidekiq_delay_until
     end
   end
 end

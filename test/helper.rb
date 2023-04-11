@@ -33,6 +33,7 @@ logger.level = Logger::ERROR
 
 Sidekiq.configure_server { |c| c.logger = logger }
 Sidekiq.configure_client { |c| c.logger = logger }
+Sidekiq.strict_args!(false)
 
 def capture_logging(level = Logger::INFO)
   old = Sidekiq.logger

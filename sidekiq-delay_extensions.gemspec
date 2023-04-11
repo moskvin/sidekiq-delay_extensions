@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
     'source_code_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions'
   }
 
-  spec.add_dependency 'sidekiq', '~> 6.5'
+  spec.add_dependency 'sidekiq', '< 8'
 end

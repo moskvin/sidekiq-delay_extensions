@@ -34,6 +34,12 @@ module Sidekiq
                             super
                           end
       end
+
+      private
+
+      def safe_load(content, _default)
+        yield(*YAML.safe_load(content, permitted_classes: [Symbol]))
+      end
     end
   end
 end

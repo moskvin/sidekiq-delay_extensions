@@ -14,10 +14,9 @@ When Sidekiq reaches 7.0, this gem will begin being maintained on its own. Maint
 Requirements
 -----------------
 
-- See https://github.com/mperham/sidekiq/tree/v6.4.0
-  - Redis: 6.2+
-  - Ruby: MRI 2.5+ or JRuby 9.2+.
-  - Sidekiq 6.5+ 
+- Redis: 6.2+
+- Ruby: MRI 2.5+ or JRuby 9.2+
+- Sidekiq 6.5+ 
 
 Installation
 -----------------

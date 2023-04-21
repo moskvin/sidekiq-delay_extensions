@@ -22,17 +22,18 @@ module Sidekiq
     end
 
     module Klass
-      def sidekiq_delay(options = {})
-        Proxy.new(DelayedClass, self, options)
+      def sidekiq_delay(**options)
+        Proxy.new(DelayedClass, self, **options)
       end
 
-      def sidekiq_delay_for(interval, options = {})
-        Proxy.new(DelayedClass, self, options.merge('at' => Time.now.to_f + interval.to_f))
+      def sidekiq_delay_for(interval, **options)
+        Proxy.new(DelayedClass, self, **options.merge('at' => Time.now.to_f + interval.to_f))
       end
 
-      def sidekiq_delay_until(timestamp, options = {})
-        Proxy.new(DelayedClass, self, options.merge('at' => timestamp.to_f))
+      def sidekiq_delay_until(timestamp, **options)
+        Proxy.new(DelayedClass, self, **options.merge('at' => timestamp.to_f))
       end
+
       alias delay sidekiq_delay
       alias delay_for sidekiq_delay_for
       alias delay_until sidekiq_delay_until

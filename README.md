@@ -9,13 +9,11 @@ The [Sidekiq delay extensions are deprecated in 6.x and will be removed from 7.x
 This gem extracts the delay extensions from the latest 6.x release and will match
 Sidekiq 6.x version numbers.  
 
-When Sidekiq reaches 7.0, this gem will begin being maintained on its own. Maintainers wanted.
-
 Requirements
 -----------------
 
 - Redis: 6.2+
-- Ruby: MRI 2.5+ or JRuby 9.2+
+- Ruby: MRI 3.2+ 
 - Sidekiq 6.5+ 
 
 Installation
@@ -34,6 +32,7 @@ Testing
 In your test environment, include the line:
 
     require "sidekiq/delay_extensions/testing"
+    Sidekiq::TestingDelayExtensions.enable_delay_testing!
 
 Contributing
 -----------------

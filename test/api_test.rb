@@ -3,7 +3,6 @@
 require_relative 'helper'
 require 'sidekiq/api'
 require 'active_job'
-require 'action_mailer'
 
 describe 'API' do
   before { Sidekiq.redis(&:flushdb) }

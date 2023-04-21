@@ -1,34 +1,16 @@
 # frozen_string_literal: true
+
 require_relative 'helper'
+require_relative 'jobs'
 
 describe 'Sidekiq::Testing.inline' do
-  class InlineError < RuntimeError; end
-  class ParameterIsNotString < RuntimeError; end
-
-  class InlineWorker
-    include Sidekiq::Job
-    def perform(pass)
-      raise ArgumentError, "no jid" unless jid
-      raise InlineError unless pass
-    end
-  end
-
-  class InlineWorkerWithTimeParam
-    include Sidekiq::Job
-    def perform(time)
-      raise ParameterIsNotString unless time.is_a?(String) || time.is_a?(Numeric)
-    end
-  end
-
   before do
     require 'sidekiq/delay_extensions/testing'
     require 'sidekiq/testing/inline'
     Sidekiq::Testing.inline!
   end
 
-  after do
-    Sidekiq::Testing.disable!
-  end
+  after { Sidekiq::Testing.disable! }
 
   it 'stubs the async call when in testing mode' do
     assert InlineWorker.perform_async(true)
@@ -39,22 +21,9 @@ describe 'Sidekiq::Testing.inline' do
   end
 
   describe 'delay' do
-    require 'action_mailer'
-    class InlineFooMailer < ActionMailer::Base
-      def bar(str)
-        raise InlineError
-      end
-    end
+    require_relative 'models'
 
-    class InlineFooModel
-      def self.bar(str)
-        raise InlineError
-      end
-    end
-
-    before do
-      Sidekiq::DelayExtensions.enable_delay!
-    end
+    before { Sidekiq::DelayExtensions.enable_delay! }
 
     it 'stubs the delay call on mailers' do
       assert_raises InlineError do
@@ -88,5 +57,4 @@ describe 'Sidekiq::Testing.inline' do
   it 'should relay parameters through json' do
     assert Sidekiq::Client.enqueue(InlineWorkerWithTimeParam, Time.now.to_f)
   end
-
 end

@@ -7,7 +7,7 @@ module Sidekiq
     DEFAULT_SIZE_LIMIT = 8_192
 
     class Proxy < BasicObject
-      def initialize(performable, target, options = {})
+      def initialize(performable, target, **options)
         @performable = performable
         @target = target
         @opts = options.transform_keys(&:to_s)
@@ -17,13 +17,13 @@ module Sidekiq
         true
       end
 
-      def method_missing(name, *args, **kwargs)
+      def method_missing(name, *, **)
         # Sidekiq has a limitation in that its message must be JSON.
         # JSON can't round trip real Ruby objects so we use YAML to
         # serialize the objects to a String. The YAML will be converted
         # to JSON and then deserialized on the other side back into a
         # Ruby object.
-        obj = [@target, name, args, kwargs]
+        obj = [@target, name, [*], {**}]
         marshalled = ::YAML.dump(obj)
         print_warning(name, marshalled)
 

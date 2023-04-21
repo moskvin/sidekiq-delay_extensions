@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.bindir = 'exe'
   spec.executables = []
   spec.require_paths = ['lib']
-  spec.required_ruby_version = '>= 2.7.0'
+  spec.required_ruby_version = '>= 3.2.0'
 
   spec.metadata = {
     'homepage_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions/wiki/Delayed-extensions',

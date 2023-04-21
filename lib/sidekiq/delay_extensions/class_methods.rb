@@ -16,8 +16,8 @@ module Sidekiq
       include Sidekiq::Job
 
       def perform(yml)
-        (target, method_name, args) = YAML.safe_load(yml, permitted_classes: [Symbol])
-        target.__send__(method_name, *args)
+        (target, method_name, args, kwargs) = YAML.safe_load(yml, permitted_classes: [Symbol])
+        target.__send__(method_name, *args, **kwargs)
       end
     end
 
@@ -27,11 +27,11 @@ module Sidekiq
       end
 
       def sidekiq_delay_for(interval, **options)
-        Proxy.new(DelayedClass, self, **options.merge('at' => Time.now.to_f + interval.to_f))
+        Proxy.new(DelayedClass, self, **options.merge(at: Time.now.to_f + interval.to_f))
       end
 
       def sidekiq_delay_until(timestamp, **options)
-        Proxy.new(DelayedClass, self, **options.merge('at' => timestamp.to_f))
+        Proxy.new(DelayedClass, self, **options.merge(at: timestamp.to_f))
       end
 
       alias delay sidekiq_delay

@@ -28,7 +28,7 @@ class InlineFooMailer < ActionMailer::Base
 end
 
 class InlineFooModel
-  def self.bar(_str)
+  def self.bar(*, **)
     raise InlineError
   end
 end

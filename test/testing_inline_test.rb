@@ -33,7 +33,7 @@ describe 'Sidekiq::Testing.inline' do
 
     it 'stubs the delay call on models' do
       assert_raises InlineError do
-        InlineFooModel.delay.bar('three')
+        InlineFooModel.delay.bar('three', foo: 'bar')
       end
     end
   end

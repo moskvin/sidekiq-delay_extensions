@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'activerecord-jdbcsqlite3-adapter', platforms: :jruby
-gem 'rails', '>= 6.0.2'
+gem 'rails', '< 9'
 gem 'rake'
 gem 'redis-namespace'
 gem 'sqlite3', platforms: :ruby

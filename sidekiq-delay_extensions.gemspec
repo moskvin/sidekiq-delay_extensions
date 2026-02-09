@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = 'Sidekiq Delay Extensions'
   spec.description = 'Extracted from Sidekiq 6.0'
   spec.homepage = 'https://github.com/gemhome/sidekiq-delay_extensions/wiki/Delayed-extensions'
-  spec.license = 'LGPL-3.0'
+  spec.license = 'LGPL-3.0-or-later'
 
   spec.files = Dir.glob('{bin,lib,config}/**/*') + %w[Gemfile sidekiq-delay_extensions.gemspec README.md Changes.md
                                                       LICENSE]
@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
     'source_code_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions'
   }
 
-  spec.add_dependency 'sidekiq', '< 8'
+  spec.add_dependency 'sidekiq', '< 9'
 end

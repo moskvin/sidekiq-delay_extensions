@@ -8,7 +8,6 @@ gem 'activerecord-jdbcsqlite3-adapter', platforms: :jruby
 gem 'rails', '>= 6.0.2'
 gem 'rake'
 gem 'redis-namespace'
-gem 'sidekiq', '< 8'
 gem 'sqlite3', platforms: :ruby
 
 # mail dependencies

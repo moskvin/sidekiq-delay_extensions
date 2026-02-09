@@ -2,6 +2,11 @@
 
 [Sidekiq Changes](https://github.com/gemhome/sidekiq-delay_extensions/blob/main/Changes.md)
 
+8.0.0
+---------
+
+- Support sidekiq v8.0+
+
 7.0.0
 ---------
 

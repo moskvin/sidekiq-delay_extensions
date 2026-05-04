@@ -3,7 +3,7 @@
 require "sidekiq"
 
 module Sidekiq
-  module DelayExtensions
+  module Delay
     class << self; attr_accessor :limit_payload_size; end
 
     def self.enable_delay!(limit_payload_size: false)
@@ -14,21 +14,21 @@ module Sidekiq
 
         # Need to patch Psych so it can autoload classes whose names are serialized
         # in the delayed YAML.
-        Psych::Visitors::ToRuby.prepend(Sidekiq::DelayExtensions::PsychAutoload)
+        Psych::Visitors::ToRuby.prepend(Sidekiq::Delay::PsychAutoload)
 
         ActiveSupport.on_load(:active_record) do
-          include Sidekiq::DelayExtensions::ActiveRecord
+          include Sidekiq::Delay::ActiveRecord
         end
         ActiveSupport.on_load(:action_mailer) do
-          extend Sidekiq::DelayExtensions::ActionMailer
+          extend Sidekiq::Delay::ActionMailer
         end
       end
 
       require "sidekiq/delay/class_methods"
-      Module.include Sidekiq::DelayExtensions::Klass
+      Module.include Sidekiq::Delay::Klass
 
       require "sidekiq/delay/api"
-      Sidekiq::JobRecord.prepend(Sidekiq::DelayExtensions::JobRecord)
+      Sidekiq::JobRecord.prepend(Sidekiq::Delay::JobRecord)
     end
 
     module PsychAutoload
@@ -47,4 +47,6 @@ module Sidekiq
       end
     end
   end
+
+  DelayExtensions = Delay
 end

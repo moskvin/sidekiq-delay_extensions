@@ -3,7 +3,7 @@
 require "sidekiq/delay/generic_proxy"
 
 module Sidekiq
-  module DelayExtensions
+  module Delay
     ##
     # Adds `delay`, `delay_for` and `delay_until` methods to all Classes to offload class method
     # execution to Sidekiq.
@@ -48,4 +48,4 @@ module Sidekiq
   end
 end
 
-Module.include Sidekiq::DelayExtensions::Klass unless defined?(::Rails)
+Module.include Sidekiq::Delay::Klass unless defined?(::Rails)

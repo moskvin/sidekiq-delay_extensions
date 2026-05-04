@@ -4,7 +4,7 @@ require_relative 'lib/sidekiq/delay/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'sidekiq-delay_extensions'
-  spec.version = Sidekiq::DelayExtensions::VERSION
+  spec.version = Sidekiq::Delay::VERSION
   spec.authors = ['Mike Perham', 'Benjamin Fleischer']
   spec.email = %w[mperham@gmail.com github@benjaminfleischer.com]
 

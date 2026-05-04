@@ -3,7 +3,7 @@
 require "yaml"
 
 module Sidekiq
-  module DelayExtensions
+  module Delay
     DEFAULT_SIZE_LIMIT = 8_192
 
     class Proxy < BasicObject
@@ -33,7 +33,7 @@ module Sidekiq
       end
 
       def print_warning(name, dump)
-        limited_payload_size = DelayExtensions.limit_payload_size
+        limited_payload_size = Delay.limit_payload_size
         return unless limited_payload_size
 
         size = (limited_payload_size != true) ? limited_payload_size : DEFAULT_SIZE_LIMIT

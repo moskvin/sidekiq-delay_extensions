@@ -3,7 +3,7 @@
 require "sidekiq/testing"
 
 module Sidekiq
-  module TestingDelayExtensions
+  module TestingDelay
     def jobs_for(klass)
       jobs.select do |job|
         marshalled = job["args"][0]
@@ -12,14 +12,16 @@ module Sidekiq
     end
 
     def self.enable_delay_testing!
-      if defined?(Sidekiq::DelayExtensions::DelayedMailer)
-        Sidekiq::DelayExtensions::DelayedMailer.extend(TestingDelayExtensions)
+      if defined?(Sidekiq::Delay::DelayedMailer)
+        Sidekiq::Delay::DelayedMailer.extend(TestingDelay)
       end
-      if defined?(Sidekiq::DelayExtensions::DelayedModel)
-        Sidekiq::DelayExtensions::DelayedModel.extend(TestingDelayExtensions)
+      if defined?(Sidekiq::Delay::DelayedModel)
+        Sidekiq::Delay::DelayedModel.extend(TestingDelay)
       end
     end
   end
 
-  TestingDelayExtensions.enable_delay_testing!
+  TestingDelay.enable_delay_testing!
+
+  TestingDelayExtensions = TestingDelay
 end

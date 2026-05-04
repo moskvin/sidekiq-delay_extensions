@@ -3,7 +3,7 @@
 require "sidekiq/delay/generic_proxy"
 
 module Sidekiq
-  module DelayExtensions
+  module Delay
     ##
     # Adds +delay+, +delay_for+ and +delay_until+ methods to ActiveRecord to offload instance method
     # execution to Sidekiq.

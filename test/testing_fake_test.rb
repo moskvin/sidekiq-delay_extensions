@@ -5,7 +5,7 @@ require_relative 'jobs'
 
 describe 'Sidekiq::Testing.fake' do
   before do
-    require 'sidekiq/delay_extensions/testing'
+    require 'sidekiq/delay/testing'
     Sidekiq::Testing.fake!
     EnqueuedWorker.jobs.clear
     DirectWorker.jobs.clear
@@ -20,7 +20,7 @@ describe 'Sidekiq::Testing.fake' do
     assert_equal 0, DirectWorker.jobs.size
     assert DirectWorker.perform_async(1, 2)
     now = Time.now.to_f
-    enqueued_at = DirectWorker.jobs.last['enqueued_at'] / 1000
+    enqueued_at = DirectWorker.jobs.last['enqueued_at'] / 1000.0
     assert_in_delta now, enqueued_at, 0.3
     assert_equal 1, DirectWorker.jobs.size
     assert DirectWorker.perform_in(10, 1, 2)
@@ -40,24 +40,20 @@ describe 'Sidekiq::Testing.fake' do
     end
 
     it 'stubs the delay call on mailers' do
-      assert_equal 0, Sidekiq::DelayExtensions::DelayedMailer.jobs.size
       FooMailer.delay.bar('hello!')
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedMailer.jobs.size
+      assert_equal 1, FooMailer::DelayedJob.jobs.size
     end
 
     it 'stubs the delay call on classes' do
-      assert_equal 0, Sidekiq::DelayExtensions::DelayedClass.jobs.size
       Something.delay.foo(Date.today)
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedClass.jobs.size
+      assert_equal 1, Something::DelayedJob.jobs.size
     end
 
     it 'returns enqueued jobs for specific classes' do
-      assert_equal 0, Sidekiq::DelayExtensions::DelayedClass.jobs.size
       FooMailer.delay.bar('hello!')
       BarMailer.delay.foo('hello!')
-      assert_equal 2, Sidekiq::DelayExtensions::DelayedMailer.jobs.size
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedMailer.jobs_for(FooMailer).size
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedMailer.jobs_for(BarMailer).size
+      assert_equal 1, FooMailer::DelayedJob.jobs.size
+      assert_equal 1, BarMailer::DelayedJob.jobs.size
     end
   end
 
@@ -216,7 +212,7 @@ describe 'Sidekiq::Testing.fake' do
 
   describe 'queue testing' do
     before do
-      require 'sidekiq/delay_extensions/testing'
+      require 'sidekiq/delay/testing'
       Sidekiq::Testing.fake!
     end
 

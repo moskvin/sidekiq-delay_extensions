@@ -20,8 +20,8 @@ group :test do
 end
 
 group :development, :test do
-  gem 'standard', require: false
   gem 'rubocop', require: false
+  gem 'standard', '>= 1.35.1', require: false
 end
 
 group :load_test do

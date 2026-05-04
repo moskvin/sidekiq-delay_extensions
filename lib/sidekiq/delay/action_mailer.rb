@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'sidekiq/delay_extensions/generic_proxy'
+require "sidekiq/delay/generic_proxy"
 
 module Sidekiq
   module DelayExtensions
@@ -28,20 +28,27 @@ module Sidekiq
 
     module ActionMailer
       def sidekiq_delay(**options)
-        Proxy.new(DelayedMailer, self, **options)
+        Proxy.new(_sidekiq_delayed_job_class, self, **options)
       end
 
       def sidekiq_delay_for(interval, **options)
-        Proxy.new(DelayedMailer, self, **options.merge(at: Time.now.to_f + interval.to_f))
+        Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: Time.now.to_f + interval.to_f))
       end
 
       def sidekiq_delay_until(timestamp, **options)
-        Proxy.new(DelayedMailer, self, **options.merge(at: timestamp.to_f))
+        Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: timestamp.to_f))
       end
 
-      alias delay sidekiq_delay
-      alias delay_for sidekiq_delay_for
-      alias delay_until sidekiq_delay_until
+      alias_method :delay, :sidekiq_delay
+      alias_method :delay_for, :sidekiq_delay_for
+      alias_method :delay_until, :sidekiq_delay_until
+
+      private
+
+      def _sidekiq_delayed_job_class
+        const_set(:DelayedJob, Class.new(DelayedMailer)) unless const_defined?(:DelayedJob, false)
+        const_get(:DelayedJob, false)
+      end
     end
   end
 end

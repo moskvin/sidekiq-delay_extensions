@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'yaml'
+require "yaml"
 
 module Sidekiq
   module DelayExtensions
@@ -27,16 +27,16 @@ module Sidekiq
         marshalled = ::YAML.dump(obj)
         print_warning(name, marshalled)
 
-        @performable.client_push({ 'class' => @performable,
-                                   'args' => [marshalled],
-                                   'display_class' => "#{@target}.#{name}" }.merge(@opts))
+        @performable.client_push({"class" => @performable,
+                                  "args" => [marshalled],
+                                  "display_class" => "#{@target}.#{name}"}.merge(@opts))
       end
 
       def print_warning(name, dump)
         limited_payload_size = DelayExtensions.limit_payload_size
         return unless limited_payload_size
 
-        size = limited_payload_size != true ? limited_payload_size : DEFAULT_SIZE_LIMIT
+        size = (limited_payload_size != true) ? limited_payload_size : DEFAULT_SIZE_LIMIT
         return if dump.size <= size
 
         ::Sidekiq.logger.warn do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'lib/sidekiq/delay_extensions/version'
+require_relative 'lib/sidekiq/delay/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'sidekiq-delay_extensions'
@@ -9,12 +9,17 @@ Gem::Specification.new do |spec|
   spec.email = %w[mperham@gmail.com github@benjaminfleischer.com]
 
   spec.summary = 'Sidekiq Delay Extensions'
-  spec.description = 'Extracted from Sidekiq 6.0'
-  spec.homepage = 'https://github.com/gemhome/sidekiq-delay_extensions/wiki/Delayed-extensions'
+  spec.description = 'Delay extensions for Sidekiq 7+'
+  spec.homepage = 'https://github.com/moskvin/sidekiq-delay_extensions'
   spec.license = 'LGPL-3.0-or-later'
 
-  spec.files = Dir.glob('{bin,lib,config}/**/*') + %w[Gemfile sidekiq-delay_extensions.gemspec README.md Changes.md
-                                                      LICENSE]
+  spec.files = Dir.glob('{bin,lib,config}/**/*') + %w[
+    Changes.md
+    Gemfile
+    LICENSE
+    README.md
+    sidekiq-delay_extensions.gemspec
+  ]
 
   spec.bindir = 'exe'
   spec.executables = []
@@ -22,11 +27,10 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 3.2.0'
 
   spec.metadata = {
-    'homepage_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions/wiki/Delayed-extensions',
-    'bug_tracker_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions/issues',
-    'documentation_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions/wiki',
-    'changelog_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions/blob/main/Changes.md',
-    'source_code_uri' => 'https://github.com/gemhome/sidekiq-delay_extensions'
+    'homepage_uri' => 'https://github.com/moskvin/sidekiq-delay_extensions',
+    'bug_tracker_uri' => 'https://github.com/moskvin/sidekiq-delay_extensions/issues',
+    'changelog_uri' => 'https://github.com/moskvin/sidekiq-delay_extensions/blob/sidekiq8/Changes.md',
+    'source_code_uri' => 'https://github.com/moskvin/sidekiq-delay_extensions'
   }
 
   spec.add_dependency 'sidekiq', '< 9'

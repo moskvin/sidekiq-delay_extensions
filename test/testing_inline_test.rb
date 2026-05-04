@@ -5,7 +5,7 @@ require_relative 'jobs'
 
 describe 'Sidekiq::Testing.inline' do
   before do
-    require 'sidekiq/delay_extensions/testing'
+    require 'sidekiq/delay/testing'
     require 'sidekiq/testing/inline'
     Sidekiq::Testing.inline!
   end

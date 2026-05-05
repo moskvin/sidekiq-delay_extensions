@@ -1,6 +1,21 @@
-# Sidekiq Delay Extensions Changes
+# sidekiq-delay Changes
 
-[Sidekiq Changes](https://github.com/gemhome/sidekiq-delay_extensions/blob/main/Changes.md)
+9.0.0
+---------
+
+- Renamed gem to `sidekiq-delay`
+- Module renamed from `Sidekiq::DelayExtensions` to `Sidekiq::Delay`
+- `Sidekiq::DelayExtensions` kept as a backward-compatible alias
+
+8.0.0
+---------
+
+- Support sidekiq v8.0+
+
+7.0.0
+---------
+
+- Support sidekiq v6.5+
 
 6.4.1
 ---------

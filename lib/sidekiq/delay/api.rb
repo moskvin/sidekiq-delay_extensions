@@ -3,13 +3,15 @@
 require "sidekiq/api"
 
 module Sidekiq
-  module DelayExtensions
+  module Delay
+    DELAYED_JOB_PATTERN = /\ASidekiq::Delay(?:Extensions)?::Delayed|::DelayedJob\z/
+
     module JobRecord
       def display_class
         # Unwrap known wrappers so they show up in a human-friendly manner in the Web UI
         @klass ||= self["display_class"] || begin
           case klass
-          when /\ASidekiq::DelayExtensions::Delayed/
+          when DELAYED_JOB_PATTERN
             safe_load(args[0], klass) do |target, method, _|
               "#{target}.#{method}"
             end
@@ -22,17 +24,23 @@ module Sidekiq
       def display_args
         # Unwrap known wrappers so they show up in a human-friendly manner in the Web UI
         @display_args ||= case klass
-                  when /\ASidekiq::DelayExtensions::Delayed/
-                    safe_load(args[0], args) do |_, _, arg, kwarg|
-                      if !kwarg || kwarg.empty?
-                        arg
-                      else
-                        [arg, kwarg]
-                      end
-                    end
-                  else
-                    super
+        when DELAYED_JOB_PATTERN
+          safe_load(args[0], args) do |_, _, arg, kwargs|
+            if !kwargs || kwargs.empty?
+              arg
+            else
+              [arg, kwargs]
+            end
+          end
+        else
+          super
         end
+      end
+
+      private
+
+      def safe_load(content, _default)
+        yield(*YAML.safe_load(content, permitted_classes: [Symbol]))
       end
     end
   end

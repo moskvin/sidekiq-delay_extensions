@@ -1,11 +1,11 @@
-ruby_version: 2.5.0
+ruby_version: 3.2
 fix: true
 parallel: true
 ignore:
   - test/**/*
   - examples/**/*
   - myapp/**/*
-  - 'lib/sidekiq/delay_extensions/**/*':
+  - 'lib/sidekiq/delay/**/*':
     - Style/MissingRespondToMissing
   - 'lib/**/*':
     - Lint/RescueException

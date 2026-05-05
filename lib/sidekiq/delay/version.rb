@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sidekiq
-  module DelayExtensions
-    VERSION = "6.4.1"
+  module Delay
+    VERSION = "8.0.0"
   end
 end

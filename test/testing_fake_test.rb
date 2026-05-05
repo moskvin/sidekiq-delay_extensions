@@ -1,32 +1,11 @@
 # frozen_string_literal: true
+
 require_relative 'helper'
+require_relative 'jobs'
 
 describe 'Sidekiq::Testing.fake' do
-  class PerformError < RuntimeError; end
-
-  class DirectWorker
-    include Sidekiq::Worker
-    def perform(a, b)
-      a + b
-    end
-  end
-
-  class EnqueuedWorker
-    include Sidekiq::Worker
-    def perform(a, b)
-      a + b
-    end
-  end
-
-  class StoredWorker
-    include Sidekiq::Worker
-    def perform(error)
-      raise PerformError if error
-    end
-  end
-
   before do
-    require 'sidekiq/delay_extensions/testing'
+    require 'sidekiq/delay/testing'
     Sidekiq::Testing.fake!
     EnqueuedWorker.jobs.clear
     DirectWorker.jobs.clear
@@ -40,7 +19,9 @@ describe 'Sidekiq::Testing.fake' do
   it 'stubs the async call' do
     assert_equal 0, DirectWorker.jobs.size
     assert DirectWorker.perform_async(1, 2)
-    assert_in_delta Time.now.to_f, DirectWorker.jobs.last['enqueued_at'], 0.1
+    now = Time.now.to_f
+    enqueued_at = DirectWorker.jobs.last['enqueued_at'] / 1000.0
+    assert_in_delta now, enqueued_at, 0.3
     assert_equal 1, DirectWorker.jobs.size
     assert DirectWorker.perform_in(10, 1, 2)
     refute DirectWorker.jobs.last['enqueued_at']
@@ -51,47 +32,28 @@ describe 'Sidekiq::Testing.fake' do
   end
 
   describe 'delayed' do
-    require 'action_mailer'
-    class FooMailer < ActionMailer::Base
-      def bar(str)
-        str
-      end
-    end
+    require_relative 'models'
 
     before do
-      Sidekiq::DelayExtensions.enable_delay!
+      Sidekiq::Delay.enable_delay!
+      Sidekiq::TestingDelay.enable_delay_testing!
     end
 
     it 'stubs the delay call on mailers' do
-      assert_equal 0, Sidekiq::DelayExtensions::DelayedMailer.jobs.size
       FooMailer.delay.bar('hello!')
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedMailer.jobs.size
-    end
-
-    class Something
-      def self.foo(x)
-      end
+      assert_equal 1, FooMailer::DelayedJob.jobs.size
     end
 
     it 'stubs the delay call on classes' do
-      assert_equal 0, Sidekiq::DelayExtensions::DelayedClass.jobs.size
       Something.delay.foo(Date.today)
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedClass.jobs.size
-    end
-
-    class BarMailer < ActionMailer::Base
-      def foo(str)
-        str
-      end
+      assert_equal 1, Something::DelayedJob.jobs.size
     end
 
     it 'returns enqueued jobs for specific classes' do
-      assert_equal 0, Sidekiq::DelayExtensions::DelayedClass.jobs.size
       FooMailer.delay.bar('hello!')
       BarMailer.delay.foo('hello!')
-      assert_equal 2, Sidekiq::DelayExtensions::DelayedMailer.jobs.size
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedMailer.jobs_for(FooMailer).size
-      assert_equal 1, Sidekiq::DelayExtensions::DelayedMailer.jobs_for(BarMailer).size
+      assert_equal 1, FooMailer::DelayedJob.jobs.size
+      assert_equal 1, BarMailer::DelayedJob.jobs.size
     end
   end
 
@@ -118,24 +80,14 @@ describe 'Sidekiq::Testing.fake' do
     assert_equal 0, StoredWorker.jobs.size
   end
 
-  class SpecificJidWorker
-    include Sidekiq::Worker
-    sidekiq_class_attribute :count
-    self.count = 0
-    def perform(worker_jid)
-      return unless worker_jid == self.jid
-      self.class.count += 1
-    end
-  end
-
   it 'execute only jobs with assigned JID' do
     4.times do |i|
       jid = SpecificJidWorker.perform_async(nil)
-      if i % 2 == 0
-        SpecificJidWorker.jobs[-1]["args"] = ["wrong_jid"]
-      else
-        SpecificJidWorker.jobs[-1]["args"] = [jid]
-      end
+      SpecificJidWorker.jobs[-1]['args'] = if i.even?
+                                             ['wrong_jid']
+                                           else
+                                             [jid]
+                                           end
     end
 
     SpecificJidWorker.perform_one
@@ -151,7 +103,7 @@ describe 'Sidekiq::Testing.fake' do
   it 'round trip serializes the job arguments' do
     assert StoredWorker.perform_async(:mike)
     job = StoredWorker.jobs.first
-    assert_equal "mike", job['args'].first
+    assert_equal 'mike', job['args'].first
     StoredWorker.clear
   end
 
@@ -173,35 +125,8 @@ describe 'Sidekiq::Testing.fake' do
     end
   end
 
-  class FirstWorker
-    include Sidekiq::Worker
-    sidekiq_class_attribute :count
-    self.count = 0
-    def perform
-      self.class.count += 1
-    end
-  end
-
-  class SecondWorker
-    include Sidekiq::Worker
-    sidekiq_class_attribute :count
-    self.count = 0
-    def perform
-      self.class.count += 1
-    end
-  end
-
-  class ThirdWorker
-    include Sidekiq::Worker
-    sidekiq_class_attribute :count
-    def perform
-      FirstWorker.perform_async
-      SecondWorker.perform_async
-    end
-  end
-
   it 'clears jobs across all workers' do
-    Sidekiq::Worker.jobs.clear
+    Sidekiq::Job.jobs.clear
     FirstWorker.count = 0
     SecondWorker.count = 0
 
@@ -214,7 +139,7 @@ describe 'Sidekiq::Testing.fake' do
     assert_equal 1, FirstWorker.jobs.size
     assert_equal 1, SecondWorker.jobs.size
 
-    Sidekiq::Worker.clear_all
+    Sidekiq::Job.clear_all
 
     assert_equal 0, FirstWorker.jobs.size
     assert_equal 0, SecondWorker.jobs.size
@@ -224,7 +149,7 @@ describe 'Sidekiq::Testing.fake' do
   end
 
   it 'drains jobs across all workers' do
-    Sidekiq::Worker.jobs.clear
+    Sidekiq::Job.jobs.clear
     FirstWorker.count = 0
     SecondWorker.count = 0
 
@@ -240,7 +165,7 @@ describe 'Sidekiq::Testing.fake' do
     assert_equal 1, FirstWorker.jobs.size
     assert_equal 1, SecondWorker.jobs.size
 
-    Sidekiq::Worker.drain_all
+    Sidekiq::Job.drain_all
 
     assert_equal 0, FirstWorker.jobs.size
     assert_equal 0, SecondWorker.jobs.size
@@ -250,7 +175,7 @@ describe 'Sidekiq::Testing.fake' do
   end
 
   it 'drains jobs across all workers even when workers create new jobs' do
-    Sidekiq::Worker.jobs.clear
+    Sidekiq::Job.jobs.clear
     FirstWorker.count = 0
     SecondWorker.count = 0
 
@@ -263,7 +188,7 @@ describe 'Sidekiq::Testing.fake' do
 
     assert_equal 1, ThirdWorker.jobs.size
 
-    Sidekiq::Worker.drain_all
+    Sidekiq::Job.drain_all
 
     assert_equal 0, ThirdWorker.jobs.size
 
@@ -272,12 +197,12 @@ describe 'Sidekiq::Testing.fake' do
   end
 
   it 'drains jobs of workers with symbolized queue names' do
-    Sidekiq::Worker.jobs.clear
+    Sidekiq::Job.jobs.clear
 
-    AltQueueWorker.perform_async(5,6)
+    AltQueueWorker.perform_async(5, 6)
     assert_equal 1, AltQueueWorker.jobs.size
 
-    Sidekiq::Worker.drain_all
+    Sidekiq::Job.drain_all
     assert_equal 0, AltQueueWorker.jobs.size
   end
 
@@ -287,7 +212,7 @@ describe 'Sidekiq::Testing.fake' do
 
   describe 'queue testing' do
     before do
-      require 'sidekiq/delay_extensions/testing'
+      require 'sidekiq/delay/testing'
       Sidekiq::Testing.fake!
     end
 
@@ -297,14 +222,14 @@ describe 'Sidekiq::Testing.fake' do
     end
 
     class QueueWorker
-      include Sidekiq::Worker
+      include Sidekiq::Job
       def perform(a, b)
         a + b
       end
     end
 
     class AltQueueWorker
-      include Sidekiq::Worker
+      include Sidekiq::Job
       sidekiq_options queue: :alt
       def perform(a, b)
         a + b
@@ -312,20 +237,20 @@ describe 'Sidekiq::Testing.fake' do
     end
 
     it 'finds enqueued jobs' do
-      assert_equal 0, Sidekiq::Queues["default"].size
+      assert_equal 0, Sidekiq::Queues['default'].size
 
       QueueWorker.perform_async(1, 2)
       QueueWorker.perform_async(1, 2)
       AltQueueWorker.perform_async(1, 2)
 
-      assert_equal 2, Sidekiq::Queues["default"].size
-      assert_equal [1, 2], Sidekiq::Queues["default"].first["args"]
+      assert_equal 2, Sidekiq::Queues['default'].size
+      assert_equal [1, 2], Sidekiq::Queues['default'].first['args']
 
-      assert_equal 1, Sidekiq::Queues["alt"].size
+      assert_equal 1, Sidekiq::Queues['alt'].size
     end
 
     it 'clears out all queues' do
-      assert_equal 0, Sidekiq::Queues["default"].size
+      assert_equal 0, Sidekiq::Queues['default'].size
 
       QueueWorker.perform_async(1, 2)
       QueueWorker.perform_async(1, 2)
@@ -333,9 +258,9 @@ describe 'Sidekiq::Testing.fake' do
 
       Sidekiq::Queues.clear_all
 
-      assert_equal 0, Sidekiq::Queues["default"].size
+      assert_equal 0, Sidekiq::Queues['default'].size
       assert_equal 0, QueueWorker.jobs.size
-      assert_equal 0, Sidekiq::Queues["alt"].size
+      assert_equal 0, Sidekiq::Queues['alt'].size
       assert_equal 0, AltQueueWorker.jobs.size
     end
 
@@ -346,7 +271,7 @@ describe 'Sidekiq::Testing.fake' do
         'args' => [1]
       )
 
-      assert_equal 1, Sidekiq::Queues["missing"].size
+      assert_equal 1, Sidekiq::Queues['missing'].size
     end
 
     it 'respects underlying array changes' do

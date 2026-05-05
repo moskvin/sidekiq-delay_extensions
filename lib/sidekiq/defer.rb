@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sidekiq"
+require 'sidekiq'
 
 module Sidekiq
   module Defer
@@ -9,8 +9,8 @@ module Sidekiq
     def self.enable_delay!(limit_payload_size: false)
       self.limit_payload_size = limit_payload_size
       if defined?(::ActiveSupport)
-        require "sidekiq/defer/active_record"
-        require "sidekiq/defer/action_mailer"
+        require 'sidekiq/defer/active_record'
+        require 'sidekiq/defer/action_mailer'
 
         # Need to patch Psych so it can autoload classes whose names are serialized
         # in the delayed YAML.
@@ -24,10 +24,10 @@ module Sidekiq
         end
       end
 
-      require "sidekiq/defer/class_methods"
+      require 'sidekiq/defer/class_methods'
       Module.include Sidekiq::Defer::Klass
 
-      require "sidekiq/defer/api"
+      require 'sidekiq/defer/api'
       Sidekiq::JobRecord.prepend(Sidekiq::Defer::JobRecord)
     end
 
@@ -36,7 +36,7 @@ module Sidekiq
         return nil if !klass_name || klass_name.empty?
 
         # constantize
-        names = klass_name.split("::")
+        names = klass_name.split('::')
         names.shift if names.empty? || names.first.empty?
 
         names.inject(Object) do |constant, name|
@@ -48,6 +48,5 @@ module Sidekiq
     end
   end
 
-  Delay = Defer
   DelayExtensions = Defer
 end

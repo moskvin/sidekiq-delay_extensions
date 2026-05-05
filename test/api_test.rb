@@ -14,7 +14,7 @@ describe 'API' do
     end
 
     it 'unwraps delayed jobs' do
-      Sidekiq::DelayExtensions.enable_delay!
+      Sidekiq::Delay.enable_delay!
       Sidekiq::Queue.delay.foo(1, 2, 3)
       q = Sidekiq::Queue.new
       x = q.first

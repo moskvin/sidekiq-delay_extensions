@@ -1,11 +1,11 @@
-Sidekiq Delay Extensions
+sidekiq-delay
 ==============
 
-[![Gem Version](https://badge.fury.io/rb/sidekiq-delay_extensions.svg)](https://rubygems.org/gems/sidekiq-delay_extensions)
+[![Gem Version](https://badge.fury.io/rb/sidekiq-delay.svg)](https://rubygems.org/gems/sidekiq-delay)
 
 The Sidekiq delay extensions were removed in Sidekiq 7.x. This gem restores them for apps still relying on the `delay`/`delay_for`/`delay_until` pattern.
 
-Each target class gets its own namespaced worker (e.g. `MyModel::DelayedJob`, `UserMailer::DelayedJob`), so jobs appear clearly in Sidekiq metrics instead of the generic wrapper class name.
+Each target class gets its own namespaced worker (e.g. `MyModel::DelayedJob`, `UserMailer::DelayedJob`), so jobs appear clearly in Sidekiq metrics instead of a generic wrapper class name.
 
 Requirements
 -----------------
@@ -17,18 +17,18 @@ Requirements
 Installation
 -----------------
 
-    gem 'sidekiq-delay_extensions'
+    gem 'sidekiq-delay'
 
 In your initializer:
 
 ```ruby
-Sidekiq::DelayExtensions.enable_delay!
+Sidekiq::Delay.enable_delay!
 ```
 
 Pass `limit_payload_size: true` (or a byte count) to log warnings on large YAML payloads:
 
 ```ruby
-Sidekiq::DelayExtensions.enable_delay!(limit_payload_size: 8_192)
+Sidekiq::Delay.enable_delay!(limit_payload_size: 8_192)
 ```
 
 Upgrading from Sidekiq's built-in extensions (IMPORTANT)
@@ -37,16 +37,21 @@ Upgrading from Sidekiq's built-in extensions (IMPORTANT)
 Jobs already in Redis were serialized with the old class names. Add these aliases so they can still be processed:
 
 ```ruby
-Sidekiq::Extensions::DelayedClass  = Sidekiq::DelayExtensions::DelayedClass
-Sidekiq::Extensions::DelayedModel  = Sidekiq::DelayExtensions::DelayedModel
-Sidekiq::Extensions::DelayedMailer = Sidekiq::DelayExtensions::DelayedMailer
+Sidekiq::Extensions::DelayedClass  = Sidekiq::Delay::DelayedClass
+Sidekiq::Extensions::DelayedModel  = Sidekiq::Delay::DelayedModel
+Sidekiq::Extensions::DelayedMailer = Sidekiq::Delay::DelayedMailer
 ```
+
+Upgrading from `sidekiq-delay_extensions`
+-----------------
+
+`Sidekiq::DelayExtensions` is aliased to `Sidekiq::Delay` — existing code continues to work without changes.
 
 Testing
 -----------------
 
 ```ruby
-require 'sidekiq/delay_extensions/testing'
+require 'sidekiq/delay/testing'
 ```
 
 This hooks `DelayedMailer` and `DelayedModel` into Sidekiq's fake/inline testing modes.

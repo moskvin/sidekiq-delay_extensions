@@ -35,8 +35,8 @@ describe 'Sidekiq::Testing.fake' do
     require_relative 'models'
 
     before do
-      Sidekiq::DelayExtensions.enable_delay!
-      Sidekiq::TestingDelayExtensions.enable_delay_testing!
+      Sidekiq::Delay.enable_delay!
+      Sidekiq::TestingDelay.enable_delay_testing!
     end
 
     it 'stubs the delay call on mailers' do

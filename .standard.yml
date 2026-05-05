@@ -5,7 +5,7 @@ ignore:
   - test/**/*
   - examples/**/*
   - myapp/**/*
-  - 'lib/sidekiq/delay_extensions/**/*':
+  - 'lib/sidekiq/delay/**/*':
     - Style/MissingRespondToMissing
   - 'lib/**/*':
     - Lint/RescueException

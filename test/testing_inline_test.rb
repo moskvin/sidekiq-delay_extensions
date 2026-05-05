@@ -23,7 +23,7 @@ describe 'Sidekiq::Testing.inline' do
   describe 'delay' do
     require_relative 'models'
 
-    before { Sidekiq::DelayExtensions.enable_delay! }
+    before { Sidekiq::Delay.enable_delay! }
 
     it 'stubs the delay call on mailers' do
       assert_raises InlineError do

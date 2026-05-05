@@ -5,7 +5,7 @@ require_relative 'jobs'
 
 describe 'Sidekiq::Testing.fake' do
   before do
-    require 'sidekiq/delay/testing'
+    require 'sidekiq/defer/testing'
     Sidekiq::Testing.fake!
     EnqueuedWorker.jobs.clear
     DirectWorker.jobs.clear
@@ -35,8 +35,8 @@ describe 'Sidekiq::Testing.fake' do
     require_relative 'models'
 
     before do
-      Sidekiq::Delay.enable_delay!
-      Sidekiq::TestingDelay.enable_delay_testing!
+      Sidekiq::Defer.enable_delay!
+      Sidekiq::TestingDefer.enable_delay_testing!
     end
 
     it 'stubs the delay call on mailers' do
@@ -212,7 +212,7 @@ describe 'Sidekiq::Testing.fake' do
 
   describe 'queue testing' do
     before do
-      require 'sidekiq/delay/testing'
+      require 'sidekiq/defer/testing'
       Sidekiq::Testing.fake!
     end
 

@@ -3,7 +3,7 @@
 require "sidekiq/api"
 
 module Sidekiq
-  module Delay
+  module Defer
     DELAYED_JOB_PATTERN = /\ASidekiq::Delay(?:Extensions)?::Delayed|::DeferredJob\z/
 
     module JobRecord

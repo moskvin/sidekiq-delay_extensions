@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "sidekiq/delay/generic_proxy"
+require "sidekiq/defer/generic_proxy"
 
 module Sidekiq
-  module Delay
+  module Defer
     ##
     # Adds +delay+, +delay_for+ and +delay_until+ methods to ActionMailer to offload arbitrary email
     # delivery to Sidekiq.

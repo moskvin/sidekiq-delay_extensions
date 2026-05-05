@@ -37,21 +37,21 @@ Upgrading from Sidekiq's built-in extensions (IMPORTANT)
 Jobs already in Redis were serialized with the old class names. Add these aliases so they can still be processed:
 
 ```ruby
-Sidekiq::Extensions::DelayedClass  = Sidekiq::Delay::DelayedClass
-Sidekiq::Extensions::DelayedModel  = Sidekiq::Delay::DelayedModel
-Sidekiq::Extensions::DelayedMailer = Sidekiq::Delay::DelayedMailer
+Sidekiq::Extensions::DelayedClass  = Sidekiq::Defer::DelayedClass
+Sidekiq::Extensions::DelayedModel  = Sidekiq::Defer::DelayedModel
+Sidekiq::Extensions::DelayedMailer = Sidekiq::Defer::DelayedMailer
 ```
 
 Upgrading from `sidekiq-delay_extensions`
 -----------------
 
-`Sidekiq::DelayExtensions` is aliased to `Sidekiq::Delay` — existing code continues to work without changes.
+`Sidekiq::DelayExtensions` and `Sidekiq::Delay` are aliased to `Sidekiq::Defer` — existing code continues to work without changes.
 
 Testing
 -----------------
 
 ```ruby
-require 'sidekiq/delay/testing'
+require 'sidekiq/defer/testing'
 ```
 
 This hooks `DelayedMailer` and `DelayedModel` into Sidekiq's fake/inline testing modes.

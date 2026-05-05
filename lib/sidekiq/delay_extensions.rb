@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-require "sidekiq/delay"
+require 'sidekiq/defer'

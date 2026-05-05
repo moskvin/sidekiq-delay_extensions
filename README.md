@@ -1,11 +1,11 @@
-sidekiq-delay
+sidekiq-defer
 ==============
 
-[![Gem Version](https://badge.fury.io/rb/sidekiq-delay.svg)](https://rubygems.org/gems/sidekiq-delay)
+[![Gem Version](https://badge.fury.io/rb/sidekiq-defer.svg)](https://rubygems.org/gems/sidekiq-defer)
 
 The Sidekiq delay extensions were removed in Sidekiq 7.x. This gem restores them for apps still relying on the `delay`/`delay_for`/`delay_until` pattern.
 
-Each target class gets its own namespaced worker (e.g. `MyModel::DelayedJob`, `UserMailer::DelayedJob`), so jobs appear clearly in Sidekiq metrics instead of a generic wrapper class name.
+Each target class gets its own namespaced worker (e.g. `MyModel::DeferredJob`, `UserMailer::DeferredJob`), so jobs appear clearly in Sidekiq metrics instead of a generic wrapper class name.
 
 Requirements
 -----------------
@@ -17,7 +17,7 @@ Requirements
 Installation
 -----------------
 
-    gem 'sidekiq-delay'
+    gem 'sidekiq-defer'
 
 In your initializer:
 

@@ -1,9 +1,9 @@
-# sidekiq-delay Changes
+# sidekiq-defer Changes
 
 9.0.0
 ---------
 
-- Renamed gem to `sidekiq-delay`
+- Renamed gem to `sidekiq-defer`
 - Module renamed from `Sidekiq::DelayExtensions` to `Sidekiq::Delay`
 - `Sidekiq::DelayExtensions` kept as a backward-compatible alias
 

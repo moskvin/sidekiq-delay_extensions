@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'sidekiq-delay', :path => '..'
+gem 'sidekiq-defer', :path => '..'
 gem 'rails'
 gem 'puma'
 

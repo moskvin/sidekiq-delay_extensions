@@ -30,8 +30,8 @@ module Sidekiq
 
       module ClassMethods
         def _sidekiq_delayed_job_class
-          const_set(:DelayedJob, Class.new(DelayedModel)) unless const_defined?(:DelayedJob, false)
-          const_get(:DelayedJob, false)
+          const_set(:DeferredJob, Class.new(DelayedModel)) unless const_defined?(:DeferredJob, false)
+          const_get(:DeferredJob, false)
         end
       end
 

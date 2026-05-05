@@ -41,19 +41,19 @@ describe 'Sidekiq::Testing.fake' do
 
     it 'stubs the delay call on mailers' do
       FooMailer.delay.bar('hello!')
-      assert_equal 1, FooMailer::DelayedJob.jobs.size
+      assert_equal 1, FooMailer::DeferredJob.jobs.size
     end
 
     it 'stubs the delay call on classes' do
       Something.delay.foo(Date.today)
-      assert_equal 1, Something::DelayedJob.jobs.size
+      assert_equal 1, Something::DeferredJob.jobs.size
     end
 
     it 'returns enqueued jobs for specific classes' do
       FooMailer.delay.bar('hello!')
       BarMailer.delay.foo('hello!')
-      assert_equal 1, FooMailer::DelayedJob.jobs.size
-      assert_equal 1, BarMailer::DelayedJob.jobs.size
+      assert_equal 1, FooMailer::DeferredJob.jobs.size
+      assert_equal 1, BarMailer::DeferredJob.jobs.size
     end
   end
 

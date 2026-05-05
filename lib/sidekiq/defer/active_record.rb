@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sidekiq/defer/generic_proxy"
+require 'sidekiq/defer/generic_proxy'
 
 module Sidekiq
   module Defer
@@ -47,9 +47,9 @@ module Sidekiq
         Proxy.new(self.class._sidekiq_delayed_job_class, self, **options.merge(at: timestamp.to_f))
       end
 
-      alias_method :delay, :sidekiq_delay
-      alias_method :delay_for, :sidekiq_delay_for
-      alias_method :delay_until, :sidekiq_delay_until
+      alias delay sidekiq_delay
+      alias delay_for sidekiq_delay_for
+      alias delay_until sidekiq_delay_until
     end
   end
 end

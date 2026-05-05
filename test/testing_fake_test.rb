@@ -223,6 +223,7 @@ describe 'Sidekiq::Testing.fake' do
 
     class QueueWorker
       include Sidekiq::Job
+
       def perform(a, b)
         a + b
       end
@@ -230,6 +231,7 @@ describe 'Sidekiq::Testing.fake' do
 
     class AltQueueWorker
       include Sidekiq::Job
+
       sidekiq_options queue: :alt
       def perform(a, b)
         a + b

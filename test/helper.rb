@@ -31,20 +31,17 @@ ENV['REDIS_URL'] ||= 'redis://localhost/15'
 logger = ::Logger.new($stdout)
 logger.level = Logger::ERROR
 
-Sidekiq.configure_server { |c| c.logger = logger }
-Sidekiq.configure_client { |c| c.logger = logger }
+Sidekiq.default_configuration.logger = logger
 Sidekiq.strict_args!(false)
 
 def capture_logging(level = Logger::INFO)
   old = Sidekiq.logger
   begin
     out = StringIO.new
-    logger = ::Logger.new(out)
-    logger.level = level
-    Sidekiq.configure_client { |c| c.logger = logger }
+    Sidekiq.default_configuration.logger = ::Logger.new(out).tap { |l| l.level = level }
     yield
     out.string
   ensure
-    Sidekiq.configure_client { |c| c.logger = old }
+    Sidekiq.default_configuration.logger = old
   end
 end

@@ -4,9 +4,9 @@ require_relative 'helper'
 require_relative 'models'
 require 'sidekiq/api'
 
-Sidekiq::Delay.enable_delay!
+Sidekiq::Defer.enable_delay!
 
-describe Sidekiq::Delay do
+describe Sidekiq::Defer do
   before { Sidekiq.redis(&:flushdb) }
 
   it 'allows delayed execution of ActiveRecord class methods' do
@@ -73,7 +73,7 @@ describe Sidekiq::Delay do
   end
 
   it 'logs large payloads' do
-    Sidekiq::Delay.limit_payload_size = true
+    Sidekiq::Defer.limit_payload_size = true
 
     output = capture_logging(Logger::WARN) do
       SomeClass.delay.doit('a' * 8192)

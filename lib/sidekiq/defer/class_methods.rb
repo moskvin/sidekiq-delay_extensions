@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "sidekiq/delay/generic_proxy"
+require "sidekiq/defer/generic_proxy"
 
 module Sidekiq
-  module Delay
+  module Defer
     ##
     # Adds `delay`, `delay_for` and `delay_until` methods to all Classes to offload class method
     # execution to Sidekiq.
@@ -41,11 +41,11 @@ module Sidekiq
       private
 
       def _sidekiq_delayed_job_class
-        const_set(:DelayedJob, Class.new(DelayedClass)) unless const_defined?(:DelayedJob, false)
-        const_get(:DelayedJob, false)
+        const_set(:DeferredJob, Class.new(DelayedClass)) unless const_defined?(:DeferredJob, false)
+        const_get(:DeferredJob, false)
       end
     end
   end
 end
 
-Module.include Sidekiq::Delay::Klass unless defined?(::Rails)
+Module.include Sidekiq::Defer::Klass unless defined?(::Rails)

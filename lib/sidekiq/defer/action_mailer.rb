@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "sidekiq/delay/generic_proxy"
+require 'sidekiq/defer/generic_proxy'
 
 module Sidekiq
-  module Delay
+  module Defer
     ##
     # Adds +delay+, +delay_for+ and +delay_until+ methods to ActionMailer to offload arbitrary email
     # delivery to Sidekiq.
@@ -39,15 +39,15 @@ module Sidekiq
         Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: timestamp.to_f))
       end
 
-      alias_method :delay, :sidekiq_delay
-      alias_method :delay_for, :sidekiq_delay_for
-      alias_method :delay_until, :sidekiq_delay_until
+      alias delay sidekiq_delay
+      alias delay_for sidekiq_delay_for
+      alias delay_until sidekiq_delay_until
 
       private
 
       def _sidekiq_delayed_job_class
-        const_set(:DelayedJob, Class.new(DelayedMailer)) unless const_defined?(:DelayedJob, false)
-        const_get(:DelayedJob, false)
+        const_set(:DeferredJob, Class.new(DelayedMailer)) unless const_defined?(:DeferredJob, false)
+        const_get(:DeferredJob, false)
       end
     end
   end

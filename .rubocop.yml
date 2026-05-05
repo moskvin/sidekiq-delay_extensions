@@ -1,0 +1,8 @@
+plugins:
+  - rubocop-minitest
+  - rubocop-rails
+  - rubocop-rake
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false

@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative 'lib/sidekiq/delay/version'
+require_relative 'lib/sidekiq/defer/version'
 
 Gem::Specification.new do |spec|
-  spec.name = 'sidekiq-delay'
-  spec.version = Sidekiq::Delay::VERSION
+  spec.name = 'sidekiq-defer'
+  spec.version = Sidekiq::Defer::VERSION
   spec.authors = ['Mike Perham', 'Benjamin Fleischer']
   spec.email = %w[mperham@gmail.com github@benjaminfleischer.com]
 
-  spec.summary = 'Sidekiq Delay Extensions'
+  spec.summary = 'Sidekiq Defer Extensions'
   spec.description = 'Delay extensions for Sidekiq 7+'
   spec.homepage = 'https://github.com/moskvin/sidekiq-delay_extensions'
   spec.license = 'LGPL-3.0-or-later'
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
     Gemfile
     LICENSE
     README.md
-    sidekiq-delay.gemspec
+    sidekiq-defer.gemspec
   ]
 
   spec.bindir = 'exe'

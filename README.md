@@ -1,11 +1,11 @@
-sidekiq-delay
+sidekiq-defer
 ==============
 
-[![Gem Version](https://badge.fury.io/rb/sidekiq-delay.svg)](https://rubygems.org/gems/sidekiq-delay)
+[![Gem Version](https://badge.fury.io/rb/sidekiq-defer.svg)](https://rubygems.org/gems/sidekiq-defer)
 
 The Sidekiq delay extensions were removed in Sidekiq 7.x. This gem restores them for apps still relying on the `delay`/`delay_for`/`delay_until` pattern.
 
-Each target class gets its own namespaced worker (e.g. `MyModel::DelayedJob`, `UserMailer::DelayedJob`), so jobs appear clearly in Sidekiq metrics instead of a generic wrapper class name.
+Each target class gets its own namespaced worker (e.g. `MyModel::DeferredJob`, `UserMailer::DeferredJob`), so jobs appear clearly in Sidekiq metrics instead of a generic wrapper class name.
 
 Requirements
 -----------------
@@ -17,7 +17,7 @@ Requirements
 Installation
 -----------------
 
-    gem 'sidekiq-delay'
+    gem 'sidekiq-defer'
 
 In your initializer:
 
@@ -37,21 +37,21 @@ Upgrading from Sidekiq's built-in extensions (IMPORTANT)
 Jobs already in Redis were serialized with the old class names. Add these aliases so they can still be processed:
 
 ```ruby
-Sidekiq::Extensions::DelayedClass  = Sidekiq::Delay::DelayedClass
-Sidekiq::Extensions::DelayedModel  = Sidekiq::Delay::DelayedModel
-Sidekiq::Extensions::DelayedMailer = Sidekiq::Delay::DelayedMailer
+Sidekiq::Extensions::DelayedClass  = Sidekiq::Defer::DelayedClass
+Sidekiq::Extensions::DelayedModel  = Sidekiq::Defer::DelayedModel
+Sidekiq::Extensions::DelayedMailer = Sidekiq::Defer::DelayedMailer
 ```
 
 Upgrading from `sidekiq-delay_extensions`
 -----------------
 
-`Sidekiq::DelayExtensions` is aliased to `Sidekiq::Delay` — existing code continues to work without changes.
+`Sidekiq::DelayExtensions` and `Sidekiq::Delay` are aliased to `Sidekiq::Defer` — existing code continues to work without changes.
 
 Testing
 -----------------
 
 ```ruby
-require 'sidekiq/delay/testing'
+require 'sidekiq/defer/testing'
 ```
 
 This hooks `DelayedMailer` and `DelayedModel` into Sidekiq's fake/inline testing modes.

@@ -6,6 +6,7 @@ class ParameterIsNotString < RuntimeError; end
 
 class DirectWorker
   include Sidekiq::Job
+
   def perform(foo, bar)
     foo + bar
   end
@@ -13,6 +14,7 @@ end
 
 class EnqueuedWorker
   include Sidekiq::Job
+
   def perform(foo, bar)
     foo + bar
   end
@@ -20,6 +22,7 @@ end
 
 class StoredWorker
   include Sidekiq::Job
+
   def perform(error)
     raise PerformError if error
   end
@@ -27,6 +30,7 @@ end
 
 class SpecificJidWorker
   include Sidekiq::Job
+
   sidekiq_class_attribute :count
   self.count = 0
   def perform(worker_jid)
@@ -38,6 +42,7 @@ end
 
 class FirstWorker
   include Sidekiq::Job
+
   sidekiq_class_attribute :count
   self.count = 0
   def perform
@@ -47,6 +52,7 @@ end
 
 class SecondWorker
   include Sidekiq::Job
+
   sidekiq_class_attribute :count
   self.count = 0
   def perform
@@ -56,6 +62,7 @@ end
 
 class ThirdWorker
   include Sidekiq::Job
+
   sidekiq_class_attribute :count
   def perform
     FirstWorker.perform_async
@@ -65,6 +72,7 @@ end
 
 class InlineWorker
   include Sidekiq::Job
+
   def perform(pass)
     raise ArgumentError, 'no jid' unless jid
     raise InlineError unless pass
@@ -73,6 +81,7 @@ end
 
 class InlineWorkerWithTimeParam
   include Sidekiq::Job
+
   def perform(time)
     raise ParameterIsNotString unless time.is_a?(String) || time.is_a?(Numeric)
   end

@@ -5,7 +5,7 @@ require_relative 'jobs'
 
 describe 'Sidekiq::Testing.fake' do
   before do
-    require 'sidekiq/delay/testing'
+    require 'sidekiq/defer/testing'
     Sidekiq::Testing.fake!
     EnqueuedWorker.jobs.clear
     DirectWorker.jobs.clear
@@ -35,25 +35,25 @@ describe 'Sidekiq::Testing.fake' do
     require_relative 'models'
 
     before do
-      Sidekiq::Delay.enable_delay!
-      Sidekiq::TestingDelay.enable_delay_testing!
+      Sidekiq::Defer.enable_delay!
+      Sidekiq::TestingDefer.enable_delay_testing!
     end
 
     it 'stubs the delay call on mailers' do
       FooMailer.delay.bar('hello!')
-      assert_equal 1, FooMailer::DelayedJob.jobs.size
+      assert_equal 1, FooMailer::DeferredJob.jobs.size
     end
 
     it 'stubs the delay call on classes' do
       Something.delay.foo(Date.today)
-      assert_equal 1, Something::DelayedJob.jobs.size
+      assert_equal 1, Something::DeferredJob.jobs.size
     end
 
     it 'returns enqueued jobs for specific classes' do
       FooMailer.delay.bar('hello!')
       BarMailer.delay.foo('hello!')
-      assert_equal 1, FooMailer::DelayedJob.jobs.size
-      assert_equal 1, BarMailer::DelayedJob.jobs.size
+      assert_equal 1, FooMailer::DeferredJob.jobs.size
+      assert_equal 1, BarMailer::DeferredJob.jobs.size
     end
   end
 
@@ -212,7 +212,7 @@ describe 'Sidekiq::Testing.fake' do
 
   describe 'queue testing' do
     before do
-      require 'sidekiq/delay/testing'
+      require 'sidekiq/defer/testing'
       Sidekiq::Testing.fake!
     end
 
@@ -223,6 +223,7 @@ describe 'Sidekiq::Testing.fake' do
 
     class QueueWorker
       include Sidekiq::Job
+
       def perform(a, b)
         a + b
       end
@@ -230,6 +231,7 @@ describe 'Sidekiq::Testing.fake' do
 
     class AltQueueWorker
       include Sidekiq::Job
+
       sidekiq_options queue: :alt
       def perform(a, b)
         a + b

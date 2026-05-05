@@ -5,7 +5,7 @@ require_relative 'jobs'
 
 describe 'Sidekiq::Testing.inline' do
   before do
-    require 'sidekiq/delay/testing'
+    require 'sidekiq/defer/testing'
     require 'sidekiq/testing/inline'
     Sidekiq::Testing.inline!
   end
@@ -23,7 +23,7 @@ describe 'Sidekiq::Testing.inline' do
   describe 'delay' do
     require_relative 'models'
 
-    before { Sidekiq::Delay.enable_delay! }
+    before { Sidekiq::Defer.enable_delay! }
 
     it 'stubs the delay call on mailers' do
       assert_raises InlineError do
@@ -47,10 +47,10 @@ describe 'Sidekiq::Testing.inline' do
   end
 
   it 'stubs the push_bulk call when in testing mode' do
-    assert Sidekiq::Client.push_bulk({'class' => InlineWorker, 'args' => [[true], [true]]})
+    assert Sidekiq::Client.push_bulk({ 'class' => InlineWorker, 'args' => [[true], [true]] })
 
     assert_raises InlineError do
-      Sidekiq::Client.push_bulk({'class' => InlineWorker, 'args' => [[true], [false]]})
+      Sidekiq::Client.push_bulk({ 'class' => InlineWorker, 'args' => [[true], [false]] })
     end
   end
 

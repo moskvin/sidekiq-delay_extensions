@@ -23,6 +23,5 @@ module Sidekiq
 
   TestingDefer.enable_delay_testing!
 
-  TestingDelay = TestingDefer
   TestingDelayExtensions = TestingDefer
 end

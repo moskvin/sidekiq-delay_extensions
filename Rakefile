@@ -2,11 +2,13 @@
 
 require 'bundler/gem_tasks'
 require 'rake/testtask'
-require 'standard/rake'
+require 'rubocop/rake_task'
 
 Rake::TestTask.new(:test) do |test|
   test.warning = true
   test.pattern = 'test/**/*_test.rb'
 end
 
-task default: %i[standard test]
+RuboCop::RakeTask.new
+
+task default: %i[rubocop test]

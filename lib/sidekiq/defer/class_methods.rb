@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sidekiq/defer/generic_proxy"
+require 'sidekiq/defer/generic_proxy'
 
 module Sidekiq
   module Defer
@@ -22,30 +22,23 @@ module Sidekiq
     end
 
     module Klass
-      def sidekiq_delay(**options)
-        Proxy.new(_sidekiq_delayed_job_class, self, **options)
+      def sidekiq_delay(**)
+        Proxy.new(DelayedClass, self, **)
       end
 
-      def sidekiq_delay_for(interval, **options)
-        Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: Time.now.to_f + interval.to_f))
+      def sidekiq_delay_for(interval, **)
+        Proxy.new(DelayedClass, self, **, at: Time.now.to_f + interval.to_f)
       end
 
-      def sidekiq_delay_until(timestamp, **options)
-        Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: timestamp.to_f))
+      def sidekiq_delay_until(timestamp, **)
+        Proxy.new(DelayedClass, self, **, at: timestamp.to_f)
       end
 
-      alias_method :delay, :sidekiq_delay
-      alias_method :delay_for, :sidekiq_delay_for
-      alias_method :delay_until, :sidekiq_delay_until
-
-      private
-
-      def _sidekiq_delayed_job_class
-        const_set(:DeferredJob, Class.new(DelayedClass)) unless const_defined?(:DeferredJob, false)
-        const_get(:DeferredJob, false)
-      end
+      alias delay sidekiq_delay
+      alias delay_for sidekiq_delay_for
+      alias delay_until sidekiq_delay_until
     end
   end
 end
 
-Module.include Sidekiq::Defer::Klass unless defined?(::Rails)
+Module.include Sidekiq::Defer::Klass unless defined?(Rails)

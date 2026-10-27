@@ -16,8 +16,8 @@ module Sidekiq
       include Sidekiq::Job
 
       def perform(yml)
-        (target, method_name, args) = YAML.safe_load(yml, permitted_classes: [Symbol])
-        msg = target.public_send(method_name, *args)
+        (target, method_name, args, kwargs) = YAML.safe_load(yml, permitted_classes: [Symbol])
+        msg = target.public_send(method_name, *args, **kwargs.to_h)
         # The email method can return nil, which causes ActionMailer to return
         # an undeliverable empty message.
         raise "#{target.name}##{method_name} returned an undeliverable mail object" unless msg
@@ -27,28 +27,21 @@ module Sidekiq
     end
 
     module ActionMailer
-      def sidekiq_delay(**options)
-        Proxy.new(_sidekiq_delayed_job_class, self, **options)
+      def sidekiq_delay(**)
+        Proxy.new(DelayedMailer, self, **)
       end
 
-      def sidekiq_delay_for(interval, **options)
-        Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: Time.now.to_f + interval.to_f))
+      def sidekiq_delay_for(interval, **)
+        Proxy.new(DelayedMailer, self, **, at: Time.now.to_f + interval.to_f)
       end
 
-      def sidekiq_delay_until(timestamp, **options)
-        Proxy.new(_sidekiq_delayed_job_class, self, **options.merge(at: timestamp.to_f))
+      def sidekiq_delay_until(timestamp, **)
+        Proxy.new(DelayedMailer, self, **, at: timestamp.to_f)
       end
 
       alias delay sidekiq_delay
       alias delay_for sidekiq_delay_for
       alias delay_until sidekiq_delay_until
-
-      private
-
-      def _sidekiq_delayed_job_class
-        const_set(:DeferredJob, Class.new(DelayedMailer)) unless const_defined?(:DeferredJob, false)
-        const_get(:DeferredJob, false)
-      end
     end
   end
 end

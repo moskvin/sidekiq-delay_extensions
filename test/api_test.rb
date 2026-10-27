@@ -18,6 +18,7 @@ describe 'API' do
       Sidekiq::Queue.delay.foo(1, 2, 3)
       q = Sidekiq::Queue.new
       x = q.first
+
       assert_equal 'Sidekiq::Queue.foo', x.display_class
       assert_equal [1, 2, 3], x.display_args
     end

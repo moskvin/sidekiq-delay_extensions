@@ -12,3 +12,7 @@ tmp/
 pkg/*.gem
 .byebug_history
 Gemfile.lock
+checksums/
+.DS_Store
+*.gem
+.sidekiq-defer/

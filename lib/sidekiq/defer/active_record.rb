@@ -24,27 +24,16 @@ module Sidekiq
     end
 
     module ActiveRecord
-      def self.included(base)
-        base.extend(ClassMethods)
+      def sidekiq_delay(**)
+        Proxy.new(DelayedModel, self, **)
       end
 
-      module ClassMethods
-        def _sidekiq_delayed_job_class
-          const_set(:DeferredJob, Class.new(DelayedModel)) unless const_defined?(:DeferredJob, false)
-          const_get(:DeferredJob, false)
-        end
+      def sidekiq_delay_for(interval, **)
+        Proxy.new(DelayedModel, self, **, at: Time.now.to_f + interval.to_f)
       end
 
-      def sidekiq_delay(**options)
-        Proxy.new(self.class._sidekiq_delayed_job_class, self, **options)
-      end
-
-      def sidekiq_delay_for(interval, **options)
-        Proxy.new(self.class._sidekiq_delayed_job_class, self, **options.merge(at: Time.now.to_f + interval.to_f))
-      end
-
-      def sidekiq_delay_until(timestamp, **options)
-        Proxy.new(self.class._sidekiq_delayed_job_class, self, **options.merge(at: timestamp.to_f))
+      def sidekiq_delay_until(timestamp, **)
+        Proxy.new(DelayedModel, self, **, at: timestamp.to_f)
       end
 
       alias delay sidekiq_delay

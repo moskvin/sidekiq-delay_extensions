@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sidekiq/api"
+require 'sidekiq/api'
 
 module Sidekiq
   module Defer
@@ -10,7 +10,7 @@ module Sidekiq
     module JobRecord
       def display_class
         # Unwrap known wrappers so they show up in a human-friendly manner in the Web UI
-        @display_class ||= self["display_class"] || begin
+        @display_class ||= self['display_class'] || begin
           case klass
           when DELAYED_JOB_PATTERN
             safe_load(args[0], klass) do |target, method, _|
@@ -25,17 +25,17 @@ module Sidekiq
       def display_args
         # Unwrap known wrappers so they show up in a human-friendly manner in the Web UI
         @display_args ||= case klass
-        when DELAYED_JOB_PATTERN
-          safe_load(args[0], args) do |_, _, arg, kwargs|
-            if !kwargs || kwargs.empty?
-              arg
-            else
-              [arg, kwargs]
-            end
-          end
-        else
-          super
-        end
+                          when DELAYED_JOB_PATTERN
+                            safe_load(args[0], args) do |_, _, arg, kwargs|
+                              if !kwargs || kwargs.empty?
+                                arg
+                              else
+                                [arg, kwargs]
+                              end
+                            end
+                          else
+                            super
+                          end
       end
 
       private

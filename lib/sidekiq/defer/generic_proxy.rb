@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "yaml"
+require 'yaml'
 
 module Sidekiq
   module Defer
@@ -32,11 +32,11 @@ module Sidekiq
 
       # The job hash pushed to Sidekiq. Override (e.g. with prepend) to add keys.
       def build_item(name, marshalled)
-        item = {"class" => ::Sidekiq::Defer.job_class_name(@performable),
-                "args" => [marshalled],
-                "display_class" => "#{@target}.#{name}"}
+        item = { 'class' => ::Sidekiq::Defer.job_class_name(@performable),
+                 'args' => [marshalled],
+                 'display_class' => "#{@target}.#{name}" }
         wrapped = ::Sidekiq::Defer.wrapped_name(@target)
-        item["wrapped"] = wrapped if wrapped
+        item['wrapped'] = wrapped if wrapped
         item.merge(@opts)
       end
 
@@ -44,7 +44,7 @@ module Sidekiq
         limited_payload_size = Defer.limit_payload_size
         return unless limited_payload_size
 
-        size = (limited_payload_size != true) ? limited_payload_size : DEFAULT_SIZE_LIMIT
+        size = limited_payload_size == true ? DEFAULT_SIZE_LIMIT : limited_payload_size
         return if dump.bytesize <= size
 
         ::Sidekiq.logger.warn do

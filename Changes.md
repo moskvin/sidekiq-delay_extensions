@@ -17,6 +17,7 @@ First release under its own version line; use this instead of 9.0.0.
 - `Proxy#build_item` hook for adding keys to the job hash.
 - `Sidekiq::Defer::DelayedClass` gets `jobs_for` under `Sidekiq::Testing`.
 - Requires Sidekiq >= 7.0, < 9. Packages only files committed to git. Release tasks in `rakelib/release.rake`.
+- Lint with RuboCop (single quotes) instead of StandardRB.
 
 9.0.0 (yank recommended)
 ---------

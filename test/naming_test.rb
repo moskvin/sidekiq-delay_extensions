@@ -39,6 +39,7 @@ describe 'job naming' do
 
   it 'wraps class targets with the class name' do
     job = enqueue { SomeClass.delay.doit(1) }
+
     assert_equal 'Sidekiq::Defer::DelayedClass', job['class']
     assert_equal 'SomeClass', job['wrapped']
     assert_equal 'SomeClass.doit', job['display_class']
@@ -48,6 +49,7 @@ describe 'job naming' do
     assert_equal 'SomeModule', enqueue { SomeModule.delay.doit(1) }['wrapped']
     Sidekiq.redis(&:flushdb)
     job = enqueue { UserMailer.delay.greetings(1, 2) }
+
     assert_equal 'Sidekiq::Defer::DelayedMailer', job['class']
     assert_equal 'UserMailer', job['wrapped']
   end
@@ -62,12 +64,14 @@ describe 'job naming' do
 
   it 'can turn wrapping off' do
     Sidekiq::Defer.wrap_target = false
+
     refute enqueue { SomeClass.delay.doit(1) }.key?('wrapped')
   end
 
   it 'pushes legacy class names when asked' do
     Sidekiq::Defer.legacy_class_names = true
     job = enqueue { SomeClass.delay.doit(1) }
+
     assert_equal 'Sidekiq::DelayExtensions::DelayedClass', job['class']
     assert_equal 'SomeClass', job['wrapped']
   end
@@ -82,6 +86,7 @@ describe 'job naming' do
     job = enqueue { SomeClass.delay.doit(1) }
 
     Sidekiq::Metrics::Middleware.new(tracker).call(nil, job, 'default') { nil }
+
     assert_equal [%w[default SomeClass]], tracked
   end
 
@@ -91,8 +96,10 @@ describe 'job naming' do
 
     output = capture_logging(Logger::WARN) do
       strategy, = retrier.send(:delay_for, Sidekiq::Defer::DelayedClass.new, 1, StandardError.new, job)
+
       assert_equal :default, strategy
     end
+
     refute_match(/Failure scheduling retry/, output)
   end
 
@@ -101,6 +108,7 @@ describe 'job naming' do
     job = enqueue { KwargsMailer.delay.hello(name: 'Ann') }
 
     Sidekiq::Defer::DelayedMailer.new.perform(*job['args'])
+
     assert_equal 'Hi Ann', ActionMailer::Base.deliveries.last.subject
   end
 
@@ -122,7 +130,8 @@ describe 'job naming' do
     lib = File.expand_path('../lib', __dir__)
 
     out, status = Open3.capture2e(RbConfig.ruby, '-I', lib, '-e', script, stdin_data: JSON.dump(job))
-    assert status.success?, out
+
+    assert_predicate status, :success?, out
     assert_match(/ran with 1\z/, out)
   end
 end

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "sidekiq"
+require 'sidekiq'
 
 module Sidekiq
   module Defer
     # Namespace the job classes lived in before the rename. Jobs already in Redis
     # reference it, and it resolves through the DelayExtensions alias below.
-    LEGACY_NAMESPACE = "Sidekiq::DelayExtensions"
+    LEGACY_NAMESPACE = 'Sidekiq::DelayExtensions'
 
     class << self
       attr_accessor :limit_payload_size, :wrap_target, :legacy_class_names
@@ -23,8 +23,8 @@ module Sidekiq
       self.wrap_target = wrap_target
       self.legacy_class_names = legacy_class_names
       if defined?(::ActiveSupport)
-        require "sidekiq/defer/active_record"
-        require "sidekiq/defer/action_mailer"
+        require 'sidekiq/defer/active_record'
+        require 'sidekiq/defer/action_mailer'
 
         # Need to patch Psych so it can autoload classes whose names are serialized
         # in the delayed YAML.
@@ -38,10 +38,10 @@ module Sidekiq
         end
       end
 
-      require "sidekiq/defer/class_methods"
+      require 'sidekiq/defer/class_methods'
       Module.include Sidekiq::Defer::Klass
 
-      require "sidekiq/defer/api"
+      require 'sidekiq/defer/api'
       Sidekiq::JobRecord.prepend(Sidekiq::Defer::JobRecord)
     end
 
@@ -51,7 +51,7 @@ module Sidekiq
       return performable.name unless legacy_class_names
       return performable.name if defined?(::Sidekiq::Testing) && ::Sidekiq::Testing.enabled?
 
-      "#{LEGACY_NAMESPACE}::#{performable.name.split("::").last}"
+      "#{LEGACY_NAMESPACE}::#{performable.name.split('::').last}"
     end
 
     # The "wrapped" value for a delayed job: the target's class name. It must be a
@@ -67,7 +67,7 @@ module Sidekiq
         return nil if !klass_name || klass_name.empty?
 
         # constantize
-        names = klass_name.split("::")
+        names = klass_name.split('::')
         names.shift if names.empty? || names.first.empty?
 
         names.inject(Object) do |constant, name|

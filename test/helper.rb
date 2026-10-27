@@ -28,7 +28,7 @@ end
 
 ENV['REDIS_URL'] ||= 'redis://localhost/15'
 
-logger = ::Logger.new($stdout)
+logger = Logger.new($stdout)
 logger.level = Logger::ERROR
 
 Sidekiq.default_configuration.logger = logger
@@ -38,7 +38,7 @@ def capture_logging(level = Logger::INFO)
   old = Sidekiq.logger
   begin
     out = StringIO.new
-    Sidekiq.default_configuration.logger = ::Logger.new(out).tap { |l| l.level = level }
+    Sidekiq.default_configuration.logger = Logger.new(out).tap { |l| l.level = level }
     yield
     out.string
   ensure

@@ -21,6 +21,7 @@ describe 'Sidekiq::Testing.fake' do
     assert DirectWorker.perform_async(1, 2)
     now = Time.now.to_f
     enqueued_at = DirectWorker.jobs.last['enqueued_at'] / 1000.0
+
     assert_in_delta now, enqueued_at, 0.3
     assert_equal 1, DirectWorker.jobs.size
     assert DirectWorker.perform_in(10, 1, 2)
@@ -41,12 +42,14 @@ describe 'Sidekiq::Testing.fake' do
 
     it 'stubs the delay call on mailers' do
       FooMailer.delay.bar('hello!')
+
       assert_equal 1, Sidekiq::Defer::DelayedMailer.jobs.size
       assert_equal 'FooMailer', Sidekiq::Defer::DelayedMailer.jobs.last['wrapped']
     end
 
     it 'stubs the delay call on classes' do
       Something.delay.foo(Date.today)
+
       assert_equal 1, Sidekiq::Defer::DelayedClass.jobs.size
       assert_equal 'Something', Sidekiq::Defer::DelayedClass.jobs.last['wrapped']
     end
@@ -54,6 +57,7 @@ describe 'Sidekiq::Testing.fake' do
     it 'returns enqueued jobs for specific classes' do
       FooMailer.delay.bar('hello!')
       BarMailer.delay.foo('hello!')
+
       assert_equal 2, Sidekiq::Defer::DelayedMailer.jobs.size
       assert_equal 1, Sidekiq::Defer::DelayedMailer.jobs_for(FooMailer).size
       assert_equal 1, Sidekiq::Defer::DelayedMailer.jobs_for(BarMailer).size
@@ -61,12 +65,14 @@ describe 'Sidekiq::Testing.fake' do
 
     it 'finds class jobs with jobs_for' do
       Something.delay.foo('today')
+
       assert_equal 1, Sidekiq::Defer::DelayedClass.jobs_for(Something).size
     end
 
     it 'pushes modern class names under testing even with legacy_class_names' do
       Sidekiq::Defer.legacy_class_names = true
       Something.delay.foo(Date.today)
+
       assert_equal 1, Sidekiq::Defer::DelayedClass.jobs.size
     ensure
       Sidekiq::Defer.legacy_class_names = false
@@ -107,18 +113,22 @@ describe 'Sidekiq::Testing.fake' do
     end
 
     SpecificJidWorker.perform_one
+
     assert_equal 0, SpecificJidWorker.count
 
     SpecificJidWorker.perform_one
+
     assert_equal 1, SpecificJidWorker.count
 
     SpecificJidWorker.drain
+
     assert_equal 2, SpecificJidWorker.count
   end
 
   it 'round trip serializes the job arguments' do
     assert StoredWorker.perform_async(:mike)
     job = StoredWorker.jobs.first
+
     assert_equal 'mike', job['args'].first
     StoredWorker.clear
   end
@@ -126,9 +136,11 @@ describe 'Sidekiq::Testing.fake' do
   it 'perform_one runs only one job' do
     DirectWorker.perform_async(1, 2)
     DirectWorker.perform_async(3, 4)
+
     assert_equal 2, DirectWorker.jobs.size
 
     DirectWorker.perform_one
+
     assert_equal 1, DirectWorker.jobs.size
 
     DirectWorker.clear
@@ -216,9 +228,11 @@ describe 'Sidekiq::Testing.fake' do
     Sidekiq::Job.jobs.clear
 
     AltQueueWorker.perform_async(5, 6)
+
     assert_equal 1, AltQueueWorker.jobs.size
 
     Sidekiq::Job.drain_all
+
     assert_equal 0, AltQueueWorker.jobs.size
   end
 
@@ -300,8 +314,10 @@ describe 'Sidekiq::Testing.fake' do
       # by saving a reference to the jobs array and ensuring
       # it changes properly on enqueueing
       jobs = QueueWorker.jobs
+
       assert_equal 0, jobs.size
       QueueWorker.perform_async(1, 2)
+
       assert_equal 1, jobs.size
     end
   end

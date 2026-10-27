@@ -1,8 +1,49 @@
+# rubocop-rails is not loaded on purpose: lib/ must run without ActiveSupport,
+# so its suggestions (blank?, exclude?, pluck, ApplicationMailer…) don't apply.
 plugins:
   - rubocop-minitest
-  - rubocop-rails
   - rubocop-rake
 
 AllCops:
+  TargetRubyVersion: 3.2
   NewCops: enable
   SuggestExtensions: false
+  Exclude:
+    - 'myapp/**/*'
+    - 'pkg/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: single_quotes
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 20
+
+# PsychAutoload#resolve_class is carried over from Sidekiq 6.
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Metrics/BlockLength:
+  Exclude:
+    - 'test/**/*'
+    - 'rakelib/**/*'
+
+# Fixtures in the test suite define jobs inside describe blocks and use short names.
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'test/**/*'
+
+Naming/MethodParameterName:
+  Exclude:
+    - 'test/**/*'
+
+Style/GlobalVars:
+  Exclude:
+    - 'test/helper.rb'

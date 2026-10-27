@@ -12,10 +12,9 @@ module Sidekiq
     end
 
     def self.enable_delay_testing!
+      Sidekiq::Defer::DelayedClass.extend(TestingDefer) if defined?(Sidekiq::Defer::DelayedClass)
       Sidekiq::Defer::DelayedMailer.extend(TestingDefer) if defined?(Sidekiq::Defer::DelayedMailer)
-      return unless defined?(Sidekiq::Defer::DelayedModel)
-
-      Sidekiq::Defer::DelayedModel.extend(TestingDefer)
+      Sidekiq::Defer::DelayedModel.extend(TestingDefer) if defined?(Sidekiq::Defer::DelayedModel)
     end
   end
 

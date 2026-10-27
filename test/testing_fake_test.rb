@@ -41,19 +41,35 @@ describe 'Sidekiq::Testing.fake' do
 
     it 'stubs the delay call on mailers' do
       FooMailer.delay.bar('hello!')
-      assert_equal 1, FooMailer::DeferredJob.jobs.size
+      assert_equal 1, Sidekiq::Defer::DelayedMailer.jobs.size
+      assert_equal 'FooMailer', Sidekiq::Defer::DelayedMailer.jobs.last['wrapped']
     end
 
     it 'stubs the delay call on classes' do
       Something.delay.foo(Date.today)
-      assert_equal 1, Something::DeferredJob.jobs.size
+      assert_equal 1, Sidekiq::Defer::DelayedClass.jobs.size
+      assert_equal 'Something', Sidekiq::Defer::DelayedClass.jobs.last['wrapped']
     end
 
     it 'returns enqueued jobs for specific classes' do
       FooMailer.delay.bar('hello!')
       BarMailer.delay.foo('hello!')
-      assert_equal 1, FooMailer::DeferredJob.jobs.size
-      assert_equal 1, BarMailer::DeferredJob.jobs.size
+      assert_equal 2, Sidekiq::Defer::DelayedMailer.jobs.size
+      assert_equal 1, Sidekiq::Defer::DelayedMailer.jobs_for(FooMailer).size
+      assert_equal 1, Sidekiq::Defer::DelayedMailer.jobs_for(BarMailer).size
+    end
+
+    it 'finds class jobs with jobs_for' do
+      Something.delay.foo('today')
+      assert_equal 1, Sidekiq::Defer::DelayedClass.jobs_for(Something).size
+    end
+
+    it 'pushes modern class names under testing even with legacy_class_names' do
+      Sidekiq::Defer.legacy_class_names = true
+      Something.delay.foo(Date.today)
+      assert_equal 1, Sidekiq::Defer::DelayedClass.jobs.size
+    ensure
+      Sidekiq::Defer.legacy_class_names = false
     end
   end
 

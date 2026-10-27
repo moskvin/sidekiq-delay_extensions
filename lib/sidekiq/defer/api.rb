@@ -4,7 +4,8 @@ require "sidekiq/api"
 
 module Sidekiq
   module Defer
-    DELAYED_JOB_PATTERN = /\ASidekiq::Delay(?:Extensions)?::Delayed|::DeferredJob\z/
+    # Current, pre-rename and Sidekiq 6 built-in names, plus 9.0.0 per-target classes.
+    DELAYED_JOB_PATTERN = /\ASidekiq::(?:Defer|DelayExtensions|Delay|Extensions)::Delayed|::DeferredJob\z/
 
     module JobRecord
       def display_class

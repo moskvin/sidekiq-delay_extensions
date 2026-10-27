@@ -5,7 +5,7 @@ require_relative 'lib/sidekiq/defer/version'
 Gem::Specification.new do |spec|
   spec.name = 'sidekiq-defer'
   spec.version = Sidekiq::Defer::VERSION
-  spec.authors = ['Mike Perham', 'Benjamin Fleischer', 'Niko M']
+  spec.authors = ['Mike Perham', 'Benjamin Fleischer', 'Nikolay Moskvin']
   spec.email = %w[mperham@gmail.com github@benjaminfleischer.com]
 
   spec.summary = 'Sidekiq Defer Extensions'

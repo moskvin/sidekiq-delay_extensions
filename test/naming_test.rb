@@ -112,6 +112,16 @@ describe 'job naming' do
     assert_equal 'Hi Ann', ActionMailer::Base.deliveries.last.subject
   end
 
+  it 'defines VERSION when only sidekiq/defer is required' do
+    lib = File.expand_path('../lib', __dir__)
+    script = "require 'sidekiq/defer'; print Sidekiq::Defer::VERSION"
+
+    out, status = Open3.capture2e(RbConfig.ruby, '-I', lib, '-e', script)
+
+    assert_predicate status, :success?, out
+    assert_match(/\d+\.\d+\.\d+\z/, out)
+  end
+
   # Regression: 9.0.0 pushed Foo::DeferredJob, a constant that only existed in the
   # process that called Foo.delay, so Sidekiq servers could not resolve it.
   it 'runs in a process that never called delay' do

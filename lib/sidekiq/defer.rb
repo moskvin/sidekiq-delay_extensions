@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sidekiq'
+require 'sidekiq/defer/version'
 
 module Sidekiq
   module Defer

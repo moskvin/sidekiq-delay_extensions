@@ -1,6 +1,24 @@
 # sidekiq-defer Changes
 
-9.0.0
+1.0.0
+---------
+
+First release under its own version line; use this instead of 9.0.0.
+
+- Jobs are named after their target in Sidekiq metrics, job logs and Sentry: the target's class
+  name is stored in the job's `wrapped` key (`wrap_target: false` turns it off).
+- Fix: 9.0.0 pushed `Foo::DeferredJob`, which was only defined in the process that called
+  `Foo.delay`, so Sidekiq servers failed with `NameError`. Jobs run through the shared
+  `Sidekiq::Defer::DelayedClass` / `DelayedModel` / `DelayedMailer` again.
+- Fix: the Web UI showed raw YAML arguments for `Sidekiq::Defer::Delayed*` jobs.
+- Fix: delayed mailer methods receive keyword arguments.
+- `legacy_class_names: true` pushes `Sidekiq::DelayExtensions::Delayed*` for rolling deploys from
+  `sidekiq-delay_extensions`.
+- `Proxy#build_item` hook for adding keys to the job hash.
+- `Sidekiq::Defer::DelayedClass` gets `jobs_for` under `Sidekiq::Testing`.
+- Requires Sidekiq >= 7.0, < 9. Packages only files committed to git. Release tasks in `rakelib/release.rake`.
+
+9.0.0 (yank recommended)
 ---------
 
 - Renamed gem to `sidekiq-defer`
